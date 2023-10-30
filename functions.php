@@ -32,34 +32,44 @@ add_action( 'woocommerce_single_product_summary', function () {
     }
 }, 12 );
 
-// Automatically add attributes to products in the T-shirt category
-function add_tshirt_attributes($post_id) {
-    if (get_post_type($post_id) != 'product') return; // Check if it's a product
-    if (wp_is_post_revision($post_id)) return; // Check if it's just a revision
+function add_default_tshirt_attributes($object_id, $terms, $tt_ids, $taxonomy) {
+    // Ensure we're only looking at product categories
+    if ('product_cat' !== $taxonomy) {
+        return;
+    }
 
-    if (has_term('T-Shirt', 'product_cat', $post_id)) {
-        $product = wc_get_product($post_id);
+    // Check if it's a product
+    if (get_post_type($object_id) != 'product') return;
 
-        // Check if product already has the attributes, if so, return
+    // Check if it's just a revision
+    if (wp_is_post_revision($object_id)) return;
+
+    // Check if product is in the T-shirt category
+    if (has_term('T-Shirt', 'product_cat', $object_id)) {
+        $product = wc_get_product($object_id);
+
+        // Check if product already has the attributes, if so, skip
         $attributes = $product->get_attributes();
-        if (isset($attributes['shirt-style']) && isset($attributes['shirt-color'])) return;
+        if (isset($attributes['pa_shirt-style']) && isset($attributes['pa_shirt-color'])) return;
 
-        // Define the attributes
-        $attributes['shirt-style'] = array(
-            'name' => 'shirt-style',
-            'value' => '', // Add predefined values if any
+        // Set shirt-style attribute
+        $attributes['pa_shirt-style'] = array(
+            'name' => 'pa_shirt-style',
+            'value' => '',
+            'position' => 0,
             'is_visible' => 1,
-            'is_variation' => 1,
-            'is_taxonomy' => 1,
-            'position' => 0
+            'is_variation' => 0,
+            'is_taxonomy' => 1
         );
-        $attributes['shirt-color'] = array(
-            'name' => 'shirt-color',
-            'value' => '', // Add predefined values if any
+
+        // Set shirt-color attribute
+        $attributes['pa_shirt-color'] = array(
+            'name' => 'pa_shirt-color',
+            'value' => '',
+            'position' => 1,
             'is_visible' => 1,
-            'is_variation' => 1,
-            'is_taxonomy' => 1,
-            'position' => 1
+            'is_variation' => 0,
+            'is_taxonomy' => 1
         );
 
         // Set the attributes and save the product
@@ -67,5 +77,6 @@ function add_tshirt_attributes($post_id) {
         $product->save();
     }
 }
-add_action('save_post_product', 'add_tshirt_attributes');
+add_action('set_object_terms', 'add_default_tshirt_attributes', 10, 4);
+
 

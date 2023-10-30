@@ -4,10 +4,12 @@ jQuery(document).ready(function ($) {
     // Select the first label/swatch of the current attribute
     var firstSwatch = $(this).find(".ux-swatch").first();
     firstSwatch.addClass("selected");
+    firstSwatch.click();
   });
   $(".thwvsf-wrapper-ul").each(function () {
     // Select the first label/swatch of the current attribute
     var firstSwatch = $(this).find(".thwvsf-image-li").first();
-    firstSwatch.addClass("selected");
+    firstSwatch.addClass("selected thwvsf-selected");
+    firstSwatch.click();
   });
 });

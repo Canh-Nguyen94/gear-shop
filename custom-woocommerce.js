@@ -42,6 +42,7 @@ jQuery(document).ready(function ($) {
       yellow: 'yellow',
       raspberry: 'raspberry',
       butter: 'butter',
+      ash: 'ash'
     };
 
     function getColorSelector(colorKey) {
@@ -56,51 +57,63 @@ jQuery(document).ready(function ($) {
       case "unisex-t-shirt":
         var unisexColors = ['dark_heather', 'heliconia', 'sapphire', 'banana', 'heather', 'kelly', 'pink', 'yellow', 'raspberry', 'butter'];
         var unisexSelector = unisexColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').hide();
         $(shirtColorDiv + ' .ux-swatch:not(' + unisexSelector + ')').show();
         break;
       case "womens-t-shirt":
         var womensColors = ['black', 'white', 'dark_heather', 'heliconia', 'light_blue', 'light_pink', 'royal_blue', 'purple', 'red', 'navy_blue', 'sapphire', 'sport_grey'];
         var womensSelector = womensColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + womensSelector + ')').hide();
         break;
       case "baby-rib-bodysuit":
         var babyColors = ['black', 'white', 'banana', 'charcoal', 'heather', 'kelly', 'royal_blue', 'purple', 'red', 'navy_blue', 'pink', 'yellow'];
         var babySelector = babyColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + babySelector + ')').hide();
         break;
       case "youth-unisex-t-shirt":
-        var youthColors = ['black', 'white', 'dark_heather', 'deep_heather', 'royal', 'navy', 'kelly', 'purple', 'red'];
+        var youthColors = ['black', 'white', 'dark_heather', 'deep_heather', 'royal_blue', 'navy_blue', 'kelly', 'purple', 'red'];
         var youthSelector = youthColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + youthSelector + ')').hide();
         break;
       case "toddler-unisex-t-shirt":
-        var toddlerColors = ['black', 'white', 'raspberry', 'butter', 'royal', 'light_blue', 'kelly', 'red', 'pink', 'orange'];
+        var toddlerColors = ['black', 'white', 'raspberry', 'butter', 'royal_blue', 'light_blue', 'kelly', 'red', 'pink', 'orange'];
         var toddlerSelector = toddlerColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + toddlerSelector + ')').hide();
         break;
       case "unisex-tank-top":
-        var tanktopColors = ['black', 'white', 'red', 'navy', 'royal', 'dark_heather', 'sport_grey'];
+        var tanktopColors = ['black', 'white', 'red', 'navy_blue', 'royal_blue', 'dark_heather', 'sport_grey'];
         var tanktopSelector = tanktopColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + tanktopSelector + ')').hide();
         break;
       case "unisex-long-sleeve-t-shirt":
-        var longsleeveColors = ['black', 'white', 'ash', 'charcoal', 'dark_heather', 'forest_green', 'light_blue', 'sport_grey', 'light_pink', 'maroon', 'navy', 'red', 'royal'];
+        var longsleeveColors = ['black', 'white', 'ash', 'charcoal', 'dark_heather', 'forest_green', 'light_blue', 'sport_grey', 'light_pink', 'maroon', 'navy_blue', 'red', 'royal_blue'];
         var longsleeveSelector = longsleeveColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + longsleeveSelector + ')').hide();
         break;
       case "unisex-crewneck-sweatshirt":
-        var crewneckColors = ['black', 'white', 'ash', 'charcoal', 'dark_heather', 'forest_green', 'light_blue', 'sport_grey', 'sand', 'light_pink', 'maroon', 'navy', 'red', 'royal'];
+        var crewneckColors = ['black', 'white', 'ash', 'charcoal', 'dark_heather', 'forest_green', 'light_blue', 'sport_grey', 'sand', 'light_pink', 'maroon', 'navy_blue', 'red', 'royal_blue'];
         var crewneckSelector = crewneckColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + crewneckSelector + ')').hide();
         break;
       case "unisex-hoodie":
-        var hoodieColors = ['black', 'white', 'ash', 'charcoal', 'dark_heather', 'forest_green', 'light_blue', 'sport_grey', 'sand', 'light_pink', 'maroon', 'navy', 'red', 'royal'];
+        var hoodieColors = ['black', 'white', 'ash', 'charcoal', 'dark_heather', 'forest_green', 'light_blue', 'sport_grey', 'sand', 'light_pink', 'maroon', 'navy_blue', 'red', 'royal_blue'];
         var hoodieSelector = hoodieColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').show();
         $(shirtColorDiv + ' .ux-swatch:not(' + hoodieSelector + ')').hide();
         break;
 
       default:
-        // Any default behavior if needed
+        var unisexColors = ['dark_heather', 'heliconia', 'sapphire', 'banana', 'heather', 'kelly', 'pink', 'yellow', 'raspberry', 'butter'];
+        var unisexSelector = unisexColors.map(getColorSelector).join(',');
+        $(shirtColorDiv + ' .ux-swatch').hide();
+        $(shirtColorDiv + ' .ux-swatch:not(' + unisexSelector + ')').show();
         break;
     }
   });

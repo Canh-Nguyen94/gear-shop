@@ -32,51 +32,57 @@ add_action( 'woocommerce_single_product_summary', function () {
     }
 }, 12 );
 
-function add_default_tshirt_attributes($object_id, $terms, $tt_ids, $taxonomy) {
-    // Ensure we're only looking at product categories
-    if ('product_cat' !== $taxonomy) {
-        return;
-    }
+// Hook into WooCommerce product save
+add_action('woocommerce_process_product_meta', 'auto_add_attributes_to_tshirt', 30, 2);
+add_action('woocommerce_product_import_inserted_product_object', 'auto_add_attributes_to_tshirt_import', 10, 2);
 
-    // Check if it's a product
-    if (get_post_type($object_id) != 'product') return;
+function auto_add_attributes_to_tshirt($post_id, $post) {
+    // Get the product categories
+    $categories = wp_get_post_terms($post_id, 'product_cat', array('fields' => 'names'));
 
-    // Check if it's just a revision
-    if (wp_is_post_revision($object_id)) return;
+    // Check if product has "T-shirt" category
+    if (in_array('T-shirt', $categories)) {
 
-    // Check if product is in the T-shirt category
-    if (has_term('T-Shirt', 'product_cat', $object_id)) {
-        $product = wc_get_product($object_id);
-
-        // Check if product already has the attributes, if so, skip
-        $attributes = $product->get_attributes();
-        if (isset($attributes['pa_shirt-style']) && isset($attributes['pa_shirt-color'])) return;
-
-        // Set shirt-style attribute
-        $attributes['pa_shirt-style'] = array(
-            'name' => 'pa_shirt-style',
-            'value' => '',
-            'position' => 0,
-            'is_visible' => 1,
-            'is_variation' => 0,
-            'is_taxonomy' => 1
+        $attributes = array(
+            'shirt-color' => '', // You can set default values if needed
+            'shirt-style' => ''
         );
 
-        // Set shirt-color attribute
-        $attributes['pa_shirt-color'] = array(
-            'name' => 'pa_shirt-color',
-            'value' => '',
-            'position' => 1,
-            'is_visible' => 1,
-            'is_variation' => 0,
-            'is_taxonomy' => 1
-        );
+        foreach ($attributes as $taxonomy => $value) {
+            // If product doesn't already have the attribute
+            if (!has_term('', 'pa_' . $taxonomy, $post_id)) {
+                // Add the attribute
+                wp_set_object_terms($post_id, $value, 'pa_' . $taxonomy, false);
+                
+                // Get the existing product attributes
+                $product_attributes = get_post_meta($post_id, '_product_attributes', true);
 
-        // Set the attributes and save the product
-        $product->set_attributes($attributes);
-        $product->save();
+                // Add our new attribute
+                $product_attributes['pa_' . $taxonomy] = array(
+                    'name' => 'pa_' . $taxonomy,
+                    'value' => $value,
+                    'position' => count($product_attributes) + 1,
+                    'is_visible' => 1,
+                    'is_variation' => 0,
+                    'is_taxonomy' => 1
+                );
+
+                // Update the product attributes meta data
+                update_post_meta($post_id, '_product_attributes', $product_attributes);
+            }
+        }
+
+        // Maybe clear the cache/transient for the product
+        wc_delete_product_transients($post_id);
     }
 }
-add_action('set_object_terms', 'add_default_tshirt_attributes', 10, 4);
 
+function auto_add_attributes_to_tshirt_import($product, $data) {
+    $post_id = $product->get_id();
 
+    // Check if the product is in "T-shirt" category
+    if (in_array('t-shirt', $data['categories'], true)) {
+        // You can call the original function here
+        auto_add_attributes_to_tshirt($post_id, null);
+    }
+}

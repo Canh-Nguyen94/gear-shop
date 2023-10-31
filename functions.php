@@ -35,40 +35,51 @@ add_action( 'woocommerce_single_product_summary', function () {
 // Hook into WooCommerce product save
 add_action('woocommerce_process_product_meta', 'auto_add_attributes_to_tshirt', 30, 2);
 add_action('woocommerce_product_import_inserted_product_object', 'auto_add_attributes_to_tshirt_import', 10, 2);
+add_action('updated_post_meta', 'auto_add_attributes_on_price_update', 10, 4);
 
 function auto_add_attributes_to_tshirt($post_id, $post) {
     // Get the product categories
     $categories = wp_get_post_terms($post_id, 'product_cat', array('fields' => 'names'));
 
     // Check if product has "T-shirt" category
-    if (in_array('T-shirt', $categories)) {
+    if (in_array('T-Shirt', $categories)) {
 
         $attributes = array(
-            'shirt-color' => '', // You can set default values if needed
-            'shirt-style' => ''
+            'pa_shirt-color',
+            'pa_shirt-style'
         );
 
-        foreach ($attributes as $taxonomy => $value) {
-            // If product doesn't already have the attribute
-            if (!has_term('', 'pa_' . $taxonomy, $post_id)) {
-                // Add the attribute
-                wp_set_object_terms($post_id, $value, 'pa_' . $taxonomy, false);
+        foreach ($attributes as $taxonomy) {
+            // Get the existing product attributes
+            $product_attributes = get_post_meta($post_id, '_product_attributes', true);
+
+            // Only proceed if the attribute isn't already set
+            if (!isset($product_attributes[$taxonomy])) {
                 
-                // Get the existing product attributes
-                $product_attributes = get_post_meta($post_id, '_product_attributes', true);
+                // Fetch all terms of this attribute
+                $terms = get_terms(array(
+                    'taxonomy' => $taxonomy,
+                    'hide_empty' => false,
+                    'fields' => 'names'
+                ));
+                
+                if (!is_wp_error($terms)) {
+                    // Add the attribute terms to the product
+                    wp_set_object_terms($post_id, $terms, $taxonomy, false);
+                    
+                    // Add our new attribute to the product attributes array
+                    $product_attributes[$taxonomy] = array(
+                        'name' => $taxonomy,
+                        'value' => implode('|', $terms),
+                        'position' => count($product_attributes) + 1,
+                        'is_visible' => 1,
+                        'is_variation' => 0,
+                        'is_taxonomy' => 1
+                    );
 
-                // Add our new attribute
-                $product_attributes['pa_' . $taxonomy] = array(
-                    'name' => 'pa_' . $taxonomy,
-                    'value' => $value,
-                    'position' => count($product_attributes) + 1,
-                    'is_visible' => 1,
-                    'is_variation' => 0,
-                    'is_taxonomy' => 1
-                );
-
-                // Update the product attributes meta data
-                update_post_meta($post_id, '_product_attributes', $product_attributes);
+                    // Update the product attributes meta data
+                    update_post_meta($post_id, '_product_attributes', $product_attributes);
+                }
             }
         }
 
@@ -81,8 +92,19 @@ function auto_add_attributes_to_tshirt_import($product, $data) {
     $post_id = $product->get_id();
 
     // Check if the product is in "T-shirt" category
-    if (in_array('t-shirt', $data['categories'], true)) {
+    if (in_array('T-Shirt', $data['categories'], true)) {
         // You can call the original function here
         auto_add_attributes_to_tshirt($post_id, null);
+    }
+}
+// New function to trigger attributes addition when price is updated
+function auto_add_attributes_on_price_update($meta_id, $post_id, $meta_key, $meta_value) {
+    // Check if the updated meta is the product price
+    if ('_price' === $meta_key) {
+        // Check if it's a WooCommerce product
+        if ('product' === get_post_type($post_id)) {
+            // Call the function to add attributes
+            auto_add_attributes_to_tshirt($post_id, null);
+        }
     }
 }

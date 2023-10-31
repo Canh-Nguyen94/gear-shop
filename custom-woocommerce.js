@@ -4,7 +4,7 @@ jQuery(document).ready(function ($) {
   $('select[data-attribute_name="attribute_pa_shirt-style"]').on("change", function () {
     var selectedStyle = $(this).val();
     var shirtColorDiv = 'div[data-attribute_name="attribute_pa_shirt-color"]';
-    console.log("selected", selectedStyle);
+
     var colors = {
       black: 'black',
       white: 'white',

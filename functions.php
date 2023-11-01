@@ -1,7 +1,5 @@
 <?php
 // Add custom Theme Functions here
-
-// Enqueue custom WooCommerce swatches script for T-Shirt category
 function enqueue_custom_woocommerce_swatches_script() {
     if (is_product() && has_term('T-Shirt', 'product_cat')) {
         // Only load this script on product pages of category 'T-Shirt'
@@ -10,12 +8,33 @@ function enqueue_custom_woocommerce_swatches_script() {
 }
 add_action('wp_enqueue_scripts', 'enqueue_custom_woocommerce_swatches_script');
 
-function enqueue_custom_woocommerce_default_selection_script() {
-    if (is_product()) {
-        wp_enqueue_script('custom-woocommerce-default-selection', get_stylesheet_directory_uri() . '/woocommerce-default-selection.js', array('jquery'), '1.0.0', true);
-    }
+function add_default_select_variation_script() {
+    global $product;
+    if( $product->is_type('variable') ):
+    ?>
+    <script>
+    jQuery(document).ready(function($) {
+        var default_attribute = 'unisex-t-shirt'; // Replace with your default attribute value
+        var default_color = 'black';
+        $('select[name=attribute_pa_shirt-style]').val(default_attribute).trigger('change'); 
+        $('.thwvsf-wrapper-ul li[data-value="' + default_attribute + '"]').addClass('selected thwvsf-selected');
+        $('select[name=attribute_pa_shirt-color]').val(default_color).trigger('change'); 
+        $('.ux-swatches div[data-value="' + default_color + '"]').addClass("selected");
+    });
+    </script>
+    <?php
+    endif;
 }
-add_action('wp_enqueue_scripts', 'enqueue_custom_woocommerce_default_selection_script');
+
+// function enqueue_custom_woocommerce_default_selection_script() {
+//     if (is_product()) {
+//         wp_enqueue_script('custom-woocommerce-default-selection', get_stylesheet_directory_uri() . '/woocommerce-default-selection.js', array('jquery'), '1.0.0', true);
+//     }
+// }
+// add_action('wp_enqueue_scripts', 'enqueue_custom_woocommerce_default_selection_script');
+
+add_action('woocommerce_after_single_product', 'add_default_select_variation_script', 20);
+// Enqueue custom WooCommerce swatches script for T-Shirt category
 
 add_action( 'woocommerce_single_product_summary', function () {
     global $product;
